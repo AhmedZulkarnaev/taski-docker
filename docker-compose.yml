@@ -1,4 +1,4 @@
-# Файл docker-compose.yml
+# docker-compose.yml
 version: '3'
 
 volumes:
@@ -7,7 +7,7 @@ volumes:
 
 services:
   db:
-    image: postgres:13.10
+    image: postgres:13
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
@@ -15,22 +15,19 @@ services:
     build: ./backend/
     env_file: .env
     volumes:
-        - static:/backend_static
+      - static:/backend_static
+
   frontend:
     env_file: .env
     build: ./frontend/
     command: cp -r /app/build/. /frontend_static/
     volumes:
-      - static:/frontend_static/
-# Добавляем новый контейнер: gateway.
+      - static:/frontend_static
+
   gateway:
-    # Сбилдить и запустить образ, 
-    # описанный в Dockerfile в папке gateway
     build: ./gateway/
+    env_file: .env
     volumes:
-      - static:/staticfiles/
-    # Ключ ports устанавливает
-    # перенаправление всех запросов с порта 8000 хоста
-    # на порт 80 контейнера.
+      - static:/staticfiles
     ports:
       - 8000:80
